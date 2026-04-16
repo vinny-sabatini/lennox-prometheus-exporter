@@ -1,44 +1,19 @@
 #!/usr/bin/env python
 
-# Modules
-
+import asyncio
 import logging
 import os
-import asyncio
 import signal
+import sys
 
-from lennoxs30api.s30exception import S30Exception
 from lennoxs30api import s30api_async
-from prometheus_client import start_http_server, Gauge
+from lennoxs30api.s30exception import S30Exception
+from prometheus_client import start_http_server
 
-CURRENT_TEMPERATURE = Gauge("current_temperature", "testing")
-CURRENT_HUMIDITY = Gauge("current_humidity", "testing")
-COOL_SET_POINT = Gauge("cool_set_point", "testing")
-HEAT_SET_POINT = Gauge("heat_set_point", "testing")
-TARGET_TEMPERATURE = Gauge("target_temperature", "testing")
-OUTDOOR_TEMPERATURE = Gauge("outdoor_temperature", "testing")
-S30API_ERROR_COUNT = Gauge("s30api_error_count", "testing")
-S30API_MESSAGE_COUNT = Gauge("s30api_message_count", "testing")
-S30API_RECEIVE_COUNT = Gauge("s30api_receive_count", "testing")
-S30API_SEND_COUNT = Gauge("s30api_send_count", "testing")
-S30API_HTTP_2XX_COUNT = Gauge("s30api_http_2xx_cnt", "testing")
-S30API_HTTP_4XX_COUNT = Gauge("s30api_http_4xx_cnt", "testing")
-S30API_HTTP_5XX_COUNT = Gauge("s30api_http_5xx_cnt", "testing")
-S30API_TIMEOUTS = Gauge("s30api_timeouts", "testing")
-S30API_SERVER_DISCONNECTS = Gauge("s30api_server_disconnects", "testing")
-S30API_CLIENT_RESPONSE_ERRORS = Gauge("s30api_client_response_errors", "testing")
-S30API_CONNECTION_ERRORS = Gauge("s30api_connection_errors", "testing")
-S30API_LAST_RECEIVE_TIME = Gauge("s30api_last_receive_time", "testing")
-S30API_LAST_SEND_TIME = Gauge("s30api_last_send_time", "testing")
-S30API_LAST_ERROR_TIME = Gauge("s30api_last_error_time", "testing")
-S30API_LAST_RECONNECT_TIME = Gauge("s30api_last_reconnect_time", "testing")
-S30API_LAST_MESSAGE_TIME = Gauge("s30api_last_message_time", "testing")
-S30API_LAST_METRIC_TIME = Gauge("s30api_last_metric_time", "testing")
-S30API_SIBLING_MESSAGE_DROP = Gauge("s30api_sibling_message_drop", "testing")
-S30API_SENDER_MESSAGE_DROP = Gauge("s30api_sender_message_drop", "testing")
-S30API_BYTES_IN = Gauge("s30api_bytes_in", "testing")
-S30API_BYTES_OUT = Gauge("s30api_bytes_out", "testing")
+from metrics import lennox, s30api
 
+lennox_metrics = lennox.metrics()
+s30api_metrics = s30api.metrics()
 
 # Global Variables
 running = True
@@ -53,8 +28,6 @@ consoleHandler.setFormatter(logFormatter)
 consoleHandler.setLevel(logging.INFO)
 rootLogger.addHandler(consoleHandler)
 logger = logging.getLogger(__name__)
-
-# Helper Functions
 
 
 # This task gets messages from S30 and processes them
@@ -97,78 +70,8 @@ async def api_poller_task(s30api: s30api_async):
                 for zone in lsystem.zone_list:
                     if zone.getTemperature() != None:
                         wait = 60  # wait 1 minute after everything is set up
-
-                        # TODO: Don't report ready until we get here
-                        # Otherwise these will all report 0
-                        # TODO: Try to move metric logic to functions
-                        # TODO: Cleaner way to set with default (maybe this is better with functions)
-                        CURRENT_TEMPERATURE.set(
-                            zone.getTemperature() if zone.getTemperature() else 0
-                        )
-                        CURRENT_HUMIDITY.set(
-                            zone.getHumidity() if zone.getHumidity() else 0
-                        )
-                        COOL_SET_POINT.set(zone.getCoolSP() if zone.getCoolSP() else 0)
-                        HEAT_SET_POINT.set(zone.getHeatSP() if zone.getHeatSP() else 0)
-                        TARGET_TEMPERATURE.set(
-                            zone.getTargetTemperatureF()
-                            if zone.getTargetTemperatureF()
-                            else 0
-                        )
-                        OUTDOOR_TEMPERATURE.set(
-                            lsystem.outdoorTemperature
-                            if lsystem.outdoorTemperature
-                            else 0
-                        )
-
-                        # id = zone.unique_id
-                        # hvac = {}
-                        # hvac["dt"] = int(time.time())
-                        # hvac["mode"] = zone.getSystemMode()
-                        # hvac["op"] = zone.tempOperation
-                        # hvac["demand"] = float(zone.demand) #force it to a float as it will be when on
-                        # hvac["fan"] = zone.fan
-                        # hvac["aux"] = zone.aux
-                        # logger.debug(hvac)
-                        S30API_ERROR_COUNT.set(s30api.metrics.error_count)
-                        S30API_MESSAGE_COUNT.set(s30api.metrics.message_count)
-                        S30API_RECEIVE_COUNT.set(s30api.metrics.receive_count)
-                        S30API_SEND_COUNT.set(s30api.metrics.send_count)
-                        S30API_HTTP_2XX_COUNT.set(s30api.metrics.http_2xx_cnt)
-                        S30API_HTTP_4XX_COUNT.set(s30api.metrics.http_4xx_cnt)
-                        S30API_HTTP_5XX_COUNT.set(s30api.metrics.http_5xx_cnt)
-                        S30API_TIMEOUTS.set(s30api.metrics.timeouts)
-                        S30API_SERVER_DISCONNECTS.set(s30api.metrics.server_disconnects)
-                        S30API_CLIENT_RESPONSE_ERRORS.set(
-                            s30api.metrics.client_response_errors
-                        )
-                        S30API_CONNECTION_ERRORS.set(s30api.metrics.connection_errors)
-                        S30API_LAST_RECEIVE_TIME.set(
-                            s30api.metrics.last_receive_time.timestamp()
-                        )
-                        S30API_LAST_SEND_TIME.set(
-                            s30api.metrics.last_send_time.timestamp()
-                        )
-                        S30API_LAST_ERROR_TIME.set(
-                            s30api.metrics.last_error_time.timestamp()
-                        )
-                        S30API_LAST_RECONNECT_TIME.set(
-                            s30api.metrics.last_receive_time.timestamp()
-                        )
-                        S30API_LAST_MESSAGE_TIME.set(
-                            s30api.metrics.last_message_time.timestamp()
-                        )
-                        S30API_LAST_METRIC_TIME.set(
-                            s30api.metrics.last_metric_time.timestamp()
-                        )
-                        S30API_SIBLING_MESSAGE_DROP.set(
-                            s30api.metrics.sibling_message_drop
-                        )
-                        S30API_SENDER_MESSAGE_DROP.set(
-                            s30api.metrics.sender_message_drop
-                        )
-                        S30API_BYTES_IN.set(s30api.metrics.bytes_in)
-                        S30API_BYTES_OUT.set(s30api.metrics.bytes_out)
+                        lennox_metrics.update_metrics(zone, lsystem)
+                        s30api_metrics.update_metrics(s30api.metrics, zone, lsystem)
 
         except Exception as e:
             logger.error("Exception " + str(e))
@@ -197,8 +100,15 @@ def logout(signal, frame):
 
 
 def main():
-    app_id = os.getenv("LENNOX_APP_ID", "")
     ip_address = os.getenv("LENNOX_IP_ADDRESS", "")
+    if not ip_address:
+        logger.error("Must set LENNOX_IP_ADDRESS environment variable")
+        sys.exit(1)
+
+    app_id = os.getenv("LENNOX_APP_ID", "")
+    if not app_id:
+        logger.error("Must set LENNOX_APP_ID environment variable")
+        sys.exit(1)
 
     # TODO: Setup readiness, liveness, and metrics endpoints
     start_http_server(8000)

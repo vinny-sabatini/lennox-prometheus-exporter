@@ -16,3 +16,4 @@ This has been tested using a S40.
 - Makefile
 - Docstrings
 - Tests
+- version metric
