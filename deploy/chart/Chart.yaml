@@ -1,6 +1,6 @@
 apiVersion: v2
 name: lennox-prometheus-exporter
-description: A Helm chart for Kubernetes
+description: Prometheus exporter that collects metrics from Lennox S40
 
 # A chart can be either an 'application' or a 'library' chart.
 #
