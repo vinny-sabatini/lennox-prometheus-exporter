@@ -1,0 +1,4 @@
+asyncio==4.0.0
+lennoxs30api==0.2.23
+prometheus_client==0.25.0
+pytz==2026.1.post1

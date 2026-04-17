@@ -1,0 +1,20 @@
+{{- if .Values.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    {{- include "lennox-prometheus-exporter.labels" . | nindent 4 }}
+  name: {{ include "lennox-prometheus-exporter.fullname" . }}
+spec:
+  endpoints:
+  - port: {{ .Values.service.port }}
+    scheme: http
+    path: /
+    interval: 1m
+  namespaceSelector:
+    matchNames:
+    - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      {{- include "lennox-prometheus-exporter.selectorLabels" . | nindent 6 }}
+{{- end }}
