@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  lennox-prometheus-exporter:
+  - apiVersion: v2
+    appVersion: 0.0.1
+    created: "2026-04-17T03:10:09.211399086Z"
+    description: Prometheus exporter that collects metrics from Lennox S40
+    digest: 50b98c0b059aaaf6e67cec0617eb946b6097f4b8dbfe4296fa63e3d205763d0d
+    name: lennox-prometheus-exporter
+    type: application
+    urls:
+    - https://github.com/vinny-sabatini/lennox-prometheus-exporter/releases/download/lennox-prometheus-exporter-0.0.1/lennox-prometheus-exporter-0.0.1.tgz
+    version: 0.0.1
+generated: "2026-04-17T03:10:09.211404826Z"
