@@ -159,9 +159,7 @@ class metrics:
         self.http_5xx_count.labels(system=system.name, zone=zone.name).set(
             metrics.http_5xx_cnt
         )
-        self.timeouts.labels(system=system.name, zone=zone.name).set(
-            metrics.timeouts
-        )
+        self.timeouts.labels(system=system.name, zone=zone.name).set(metrics.timeouts)
         self.server_disconnects.labels(system=system.name, zone=zone.name).set(
             metrics.server_disconnects
         )
@@ -195,9 +193,5 @@ class metrics:
         self.sender_message_drop.labels(system=system.name, zone=zone.name).set(
             metrics.sender_message_drop
         )
-        self.bytes_in.labels(system=system.name, zone=zone.name).set(
-            metrics.bytes_in
-        )
-        self.bytes_out.labels(system=system.name, zone=zone.name).set(
-            metrics.bytes_out
-        )
+        self.bytes_in.labels(system=system.name, zone=zone.name).set(metrics.bytes_in)
+        self.bytes_out.labels(system=system.name, zone=zone.name).set(metrics.bytes_out)
