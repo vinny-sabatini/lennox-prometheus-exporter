@@ -6,11 +6,10 @@ This is a [Prometheus exporter](https://prometheus.io/docs/instrumenting/exporte
 
 The initial implementation is based on the conversation in [PeteRager/lennoxs30api](https://github.com/PeteRager/lennoxs30api/issues/62).
 
-This has been tested using a S40.
+This has been tested using a single zoned S40.
 
 ## TODO
 
-- Pipeline
 - Helm chart
 - uv/pipenv/poetry?
 - Makefile
