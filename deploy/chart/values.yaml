@@ -56,7 +56,9 @@ service:
   # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
   port: 8000
 
+# This is for setting up a service monitor CR for the Prometheus Operator
 serviceMonitor:
+  # Specifies if the service monitor should be created
   enabled: true
 
 resources: {}
