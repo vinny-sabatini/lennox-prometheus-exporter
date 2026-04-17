@@ -10,7 +10,6 @@ This has been tested using a single zoned S40.
 
 ## TODO
 
-- Helm chart
 - uv/pipenv/poetry?
 - Makefile
 - Docstrings
